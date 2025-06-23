@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Plus, CheckCircle2, AlertTriangle, Eye } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Plus, CheckCircle2, AlertTriangle, Eye, Table as TableIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface NewRowPreviewProps {
@@ -74,70 +75,103 @@ const NewRowPreview: React.FC<NewRowPreviewProps> = ({
         </Card>
       </div>
 
-      {/* New Row Preview */}
+      {/* Complete Row Preview as Table */}
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">
-              Voorvertoning Nieuwe Rij
-            </h3>
+            <div className="flex items-center space-x-2">
+              <TableIcon className="w-5 h-5 text-blue-600" />
+              <h3 className="text-lg font-medium text-gray-900">
+                Volledige Rij Voorvertoning
+              </h3>
+            </div>
             <Badge variant="outline" className="text-sm">
-              Rij {newRowData.length > 0 ? 'gereed voor toevoeging' : 'wordt voorbereid'}
+              {newRowData.length > 0 ? 'Gereed voor toevoeging' : 'Wordt voorbereid'}
             </Badge>
           </div>
           
-          <ScrollArea className="h-96">
-            <div className="space-y-3">
-              {columns.map((column, index) => {
-                const value = newRowData[index] || 'Niet gevonden';
-                const isFound = value !== 'Niet gevonden';
-                
-                return (
-                  <div
-                    key={column}
-                    className={`border rounded-lg p-4 transition-colors ${
-                      isFound ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between space-x-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          {isFound ? (
-                            <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                          ) : (
-                            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                          )}
-                          <h4 className="font-medium text-gray-900 truncate">{column}</h4>
-                        </div>
-                        
-                        <div className={`text-sm p-2 rounded border ${
-                          isFound 
-                            ? 'bg-white border-green-200 text-gray-700' 
-                            : 'bg-amber-100 border-amber-300 text-amber-800'
-                        }`}>
-                          {value.length > 100 ? (
-                            <>
-                              <span>{value.substring(0, 100)}...</span>
-                              <button className="ml-2 text-blue-600 hover:text-blue-800 text-xs">
-                                Toon meer
-                              </button>
-                            </>
-                          ) : (
-                            value
-                          )}
-                        </div>
-                      </div>
-                      
-                      <Badge 
-                        variant={isFound ? "default" : "secondary"}
-                        className={isFound ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}
+          <ScrollArea className="h-96 w-full">
+            <div className="border rounded-lg">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-12 text-center">#</TableHead>
+                    <TableHead className="min-w-48">Kolom Naam</TableHead>
+                    <TableHead className="min-w-64">Geëxtraheerde Waarde</TableHead>
+                    <TableHead className="w-24 text-center">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {columns.map((column, index) => {
+                    const value = newRowData[index] || 'Niet gevonden';
+                    const isFound = value !== 'Niet gevonden';
+                    
+                    return (
+                      <TableRow 
+                        key={column}
+                        className={`transition-colors ${
+                          isFound ? 'bg-green-50 hover:bg-green-100' : 'bg-amber-50 hover:bg-amber-100'
+                        }`}
                       >
-                        {isFound ? 'Gevonden' : 'Ontbreekt'}
-                      </Badge>
-                    </div>
-                  </div>
-                );
-              })}
+                        <TableCell className="text-center text-sm text-gray-500 font-medium">
+                          {index + 1}
+                        </TableCell>
+                        
+                        <TableCell className="font-medium text-gray-900">
+                          <div className="flex items-center space-x-2">
+                            {isFound ? (
+                              <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                            ) : (
+                              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                            )}
+                            <span className="break-words">{column}</span>
+                          </div>
+                        </TableCell>
+                        
+                        <TableCell>
+                          <div className={`text-sm p-2 rounded border max-w-md ${
+                            isFound 
+                              ? 'bg-white border-green-200 text-gray-700' 
+                              : 'bg-amber-100 border-amber-300 text-amber-800'
+                          }`}>
+                            {value.length > 150 ? (
+                              <details className="group">
+                                <summary className="cursor-pointer hover:text-blue-600">
+                                  {value.substring(0, 150)}...
+                                  <span className="ml-2 text-blue-600 group-open:hidden">
+                                    [Toon meer]
+                                  </span>
+                                  <span className="ml-2 text-blue-600 hidden group-open:inline">
+                                    [Toon minder]
+                                  </span>
+                                </summary>
+                                <div className="mt-2 pt-2 border-t border-gray-200">
+                                  {value}
+                                </div>
+                              </details>
+                            ) : (
+                              <span className="break-words">{value}</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        
+                        <TableCell className="text-center">
+                          <Badge 
+                            variant={isFound ? "default" : "secondary"}
+                            className={`text-xs ${
+                              isFound 
+                                ? "bg-green-100 text-green-800 hover:bg-green-200" 
+                                : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                            }`}
+                          >
+                            {isFound ? 'Gevonden' : 'Ontbreekt'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </div>
           </ScrollArea>
         </CardContent>
@@ -173,6 +207,7 @@ const NewRowPreview: React.FC<NewRowPreviewProps> = ({
           <li>Velden gemarkeerd als "Niet gevonden" kunnen later handmatig worden ingevuld</li>
           <li>De PDF bestandsnaam wordt automatisch toegevoegd als referentie</li>
           <li>U kunt meerdere PDF's na elkaar verwerken om meer rijen toe te voegen</li>
+          <li>Klik op "[Toon meer]" bij lange teksten om de volledige inhoud te zien</li>
         </ul>
       </div>
     </div>
