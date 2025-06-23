@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from "@/components/ui/button";
-import { Upload, FileSpreadsheet, AlertCircle } from 'lucide-react';
+import { Upload, FileSpreadsheet, AlertCircle, Database } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ExcelData {
@@ -18,33 +18,31 @@ interface ExcelUploadProps {
 const ExcelUpload: React.FC<ExcelUploadProps> = ({ onUpload }) => {
   const processExcelFile = useCallback(async (file: File) => {
     try {
-      // In a real implementation, you would use a library like xlsx to parse the Excel file
-      // For this demo, we'll simulate the parsing with mock data
-      
-      const mockColumns = [
-        'Naam', 'Functie', 'Salaris', 'Loonsverhogingspercentage', 
-        'Reiskosten', 'Bonuspercentage', 'Startdatum', 'Afdeling'
+      // Mock data representing a CAO master Excel structure
+      const caoMasterColumns = [
+        'CAO_Naam', 'Datum_Akkoord', 'Geldigheidsduur', 
+        'Loonsverhogingen_2024', 'Loonsverhogingen_2025', 'Loonsverhogingen_2026',
+        'Volledige_Loonparagraaf', 'Reiskosten_Vergoeding', 'Thuiswerk_Vergoeding',
+        'Overwerk_Jurisprudentie', 'Eenmalige_Uitkering_2024', 'Eenmalige_Uitkering_2025',
+        'AI_Technologie_Paragraaf', 'RVU_Regelingen', 'Volledige_CAO_Tekst', 'PDF_Bestandsnaam'
       ];
       
-      const mockData = [
-        ['Jan Jansen', 'Developer', '€ 3500', '', '€ 200', '', '2023-01-15', 'IT'],
-        ['Marie de Boer', 'Manager', '€ 4500', '', '€ 300', '', '2022-03-20', 'HR'],
-        ['Piet Smit', 'Analyst', '€ 3200', '', '€ 150', '', '2023-06-01', 'Finance'],
-        ['Lisa van Dijk', 'Designer', '€ 3800', '', '€ 180', '', '2022-11-10', 'Marketing'],
-        ['Tom Bakker', 'Developer', '€ 3600', '', '€ 220', '', '2023-04-05', 'IT']
+      const existingData = [
+        ['CAO Metaal', '2024-01-15', '2024-2026', '3.2%', '2.8%', '2.5%', 'Minimumloonstijging volgens...', '€0.21/km', '€2.50/dag', 'Overwerk na 40u/week...', '€500', '€300', 'AI-ontwikkelingen worden...', 'Flexibele opbouw...', 'Volledige CAO tekst hier...', 'cao_metaal_2024.pdf'],
+        ['CAO Bouw', '2024-02-20', '2024-2025', '4.1%', '3.0%', '', 'Loonschalen worden...', '€0.23/km', '€3.00/dag', 'Overwerk boven normale...', '€750', '', 'Digitalisering speelt...', 'Standaard RVU...', 'Volledige tekst bouw CAO...', 'cao_bouw_2024.pdf']
       ];
 
       const excelData: ExcelData = {
         filename: file.name,
-        columns: mockColumns,
-        data: mockData
+        columns: caoMasterColumns,
+        data: existingData
       };
 
-      toast.success(`Excel bestand "${file.name}" succesvol geladen`);
+      toast.success(`Master Excel "${file.name}" succesvol geladen met ${caoMasterColumns.length} kolommen`);
       onUpload(excelData);
     } catch (error) {
       console.error('Error processing Excel file:', error);
-      toast.error('Fout bij het verwerken van het Excel bestand');
+      toast.error('Fout bij het verwerken van het Master Excel bestand');
     }
   }, [onUpload]);
 
@@ -81,21 +79,21 @@ const ExcelUpload: React.FC<ExcelUploadProps> = ({ onUpload }) => {
           </div>
           
           {isDragActive ? (
-            <p className="text-blue-600 font-medium">Laat het Excel bestand hier vallen...</p>
+            <p className="text-blue-600 font-medium">Laat het Master Excel bestand hier vallen...</p>
           ) : (
             <div className="space-y-2">
               <p className="text-gray-600">
-                Sleep uw Excel bestand hier naartoe of klik om te selecteren
+                Sleep uw Master Excel bestand hier naartoe of klik om te selecteren
               </p>
               <p className="text-sm text-gray-400">
-                Ondersteunde formaten: .xlsx, .xls
+                Dit bestand bepaalt de structuur voor CAO data extractie
               </p>
             </div>
           )}
           
           <Button variant="outline" className="flex items-center space-x-2">
             <Upload className="w-4 h-4" />
-            <span>Selecteer Bestand</span>
+            <span>Selecteer Master Excel</span>
           </Button>
         </div>
       </div>
@@ -114,12 +112,17 @@ const ExcelUpload: React.FC<ExcelUploadProps> = ({ onUpload }) => {
         </div>
       )}
 
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start space-x-2">
-          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-800">
-            <p className="font-medium mb-1">Tip:</p>
-            <p>Zorg ervoor dat uw Excel bestand headers in de eerste rij heeft en dat de data gestructureerd is.</p>
+          <Database className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-800">
+            <p className="font-medium mb-1">Master Excel Structuur:</p>
+            <ul className="space-y-1 list-disc list-inside">
+              <li>De kolomnamen bepalen welke CAO gegevens worden geëxtraheerd</li>
+              <li>Elke nieuwe PDF wordt als een nieuwe rij toegevoegd</li>
+              <li>Ontbrekende gegevens worden gemarkeerd als "Niet gevonden"</li>
+              <li>PDF bestandsnaam wordt automatisch toegevoegd als referentie</li>
+            </ul>
           </div>
         </div>
       </div>

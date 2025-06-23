@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, AlertCircle } from 'lucide-react';
+import { Upload, FileText, AlertCircle, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PDFUploadProps {
@@ -13,7 +13,7 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      toast.success(`PDF bestand "${file.name}" succesvol geladen`);
+      toast.success(`CAO PDF "${file.name}" succesvol geladen`);
       onUpload(file);
     }
   }, [onUpload]);
@@ -43,21 +43,21 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
           </div>
           
           {isDragActive ? (
-            <p className="text-red-600 font-medium">Laat het PDF bestand hier vallen...</p>
+            <p className="text-red-600 font-medium">Laat het CAO PDF bestand hier vallen...</p>
           ) : (
             <div className="space-y-2">
               <p className="text-gray-600">
-                Sleep uw PDF bestand hier naartoe of klik om te selecteren
+                Sleep uw CAO PDF bestand hier naartoe of klik om te selecteren
               </p>
               <p className="text-sm text-gray-400">
-                Ondersteund formaat: .pdf
+                Ondersteund formaat: .pdf (CAO documenten)
               </p>
             </div>
           )}
           
           <Button variant="outline" className="flex items-center space-x-2">
             <Upload className="w-4 h-4" />
-            <span>Selecteer PDF</span>
+            <span>Selecteer CAO PDF</span>
           </Button>
         </div>
       </div>
@@ -76,15 +76,16 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
         </div>
       )}
 
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start space-x-2">
-          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-800">
-            <p className="font-medium mb-1">Tips voor beste resultaten:</p>
+          <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-800">
+            <p className="font-medium mb-1">CAO PDF Verwerkingstips:</p>
             <ul className="space-y-1 list-disc list-inside">
-              <li>Gebruik PDF's met duidelijke, leesbare tekst</li>
-              <li>Zorg dat belangrijke gegevens niet in afbeeldingen staan</li>
-              <li>Gestructureerde documenten (zoals CAO's, contracten) werken het beste</li>
+              <li>Upload de officiële CAO tekst in PDF formaat</li>
+              <li>AI herkent automatisch loonafspraken, vergoedingen en andere relevante gegevens</li>
+              <li>Gestructureerde CAO documenten geven de beste resultaten</li>
+              <li>Het systeem zoekt naar specifieke termen zoals "loonsverhoging", "reiskosten", etc.</li>
             </ul>
           </div>
         </div>
