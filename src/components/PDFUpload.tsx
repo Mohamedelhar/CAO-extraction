@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from "@/components/ui/button";
@@ -6,15 +5,14 @@ import { Upload, FileText, AlertCircle, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PDFUploadProps {
-  onUpload: (file: File) => void;
+  onUpload: (files: File[]) => void;
 }
 
 const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      toast.success(`CAO PDF "${file.name}" succesvol geladen`);
-      onUpload(file);
+    if (acceptedFiles.length > 0) {
+      toast.success(`${acceptedFiles.length} CAO PDF(s) succesvol geladen`);
+      onUpload(acceptedFiles);
     }
   }, [onUpload]);
 
@@ -23,7 +21,7 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
     accept: {
       'application/pdf': ['.pdf']
     },
-    maxFiles: 1
+    maxFiles: 0
   });
 
   return (
@@ -43,11 +41,11 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
           </div>
           
           {isDragActive ? (
-            <p className="text-red-600 font-medium">Laat het CAO PDF bestand hier vallen...</p>
+            <p className="text-red-600 font-medium">Laat de CAO PDF bestanden hier vallen...</p>
           ) : (
             <div className="space-y-2">
               <p className="text-gray-600">
-                Sleep uw CAO PDF bestand hier naartoe of klik om te selecteren
+                Sleep uw CAO PDF bestanden hier naartoe of klik om te selecteren
               </p>
               <p className="text-sm text-gray-400">
                 Ondersteund formaat: .pdf (CAO documenten)
@@ -64,15 +62,19 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
 
       {acceptedFiles.length > 0 && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mb-2">
             <FileText className="w-5 h-5 text-green-600" />
             <span className="font-medium text-green-800">
-              {acceptedFiles[0].name}
-            </span>
-            <span className="text-green-600 text-sm">
-              ({(acceptedFiles[0].size / 1024 / 1024).toFixed(2)} MB)
+              {acceptedFiles.length} bestand(en) geselecteerd:
             </span>
           </div>
+          <ul className="space-y-1 max-h-40 overflow-y-auto list-disc list-inside">
+            {acceptedFiles.map(file => (
+              <li key={file.name} className="text-sm text-green-700">
+                {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

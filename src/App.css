@@ -33,6 +33,12 @@
   }
 }
 
+@media (max-width: 1205px) {
+  .mobile {
+    display: none !important;
+  }
+}
+
 .card {
   padding: 2em;
 }

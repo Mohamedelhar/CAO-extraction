@@ -1,4 +1,64 @@
-# Welcome to your Lovable project
+# CAO Analyse & Excel Generator
+
+This project is a web application that analyzes Dutch Collective Labor Agreement (CAO) documents in PDF format, extracts salary increases using an AI model, and generates a summary Excel file.
+
+## How to Run the Application
+
+To run this application, you need to run two separate processes simultaneously in two different terminals: the **Backend API** and the **Frontend Web App**.
+
+### Prerequisites
+
+1.  **Node.js & npm**: Make sure you have Node.js and npm installed. This is for the frontend.
+2.  **Python & pip**: Make sure you have Python 3 and pip installed. This is for the backend.
+3.  **System Packages**: The Python backend requires two system packages for PDF and OCR processing.
+    *   **On macOS**: `brew install tesseract poppler`
+    *   **On Linux (Debian/Ubuntu)**: `sudo apt-get install tesseract-ocr poppler-utils`
+    *   **Tesseract Language Data**: Ensure you also have the Dutch language pack for Tesseract: `tesseract-nld`. This might be installed with `tesseract` or may require a separate package like `tesseract-ocr-nld`.
+
+---
+
+### Step 1: Run the Backend API (Terminal 1)
+
+The backend is a Python server that handles the heavy lifting of PDF analysis.
+
+1.  **Navigate to the backend directory:**
+    ```bash
+    cd src/backend
+    ```
+
+2.  **(First time only) Install Python dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Run the server:**
+    ```bash
+    python server.py
+    ```
+
+4.  **Keep this terminal open!** The server will start logging information. If it starts correctly, you will see lines like `* Running on http://127.0.0.1:5001`. The frontend needs this server to be running to function. All detailed processing logs will appear here.
+
+---
+
+### Step 2: Run the Frontend App (Terminal 2)
+
+The frontend is a React application that provides the user interface in your browser.
+
+1.  **Navigate to the project's root directory** (if you're not already there).
+
+2.  **(First time only) Install Node.js dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Run the frontend:**
+    ```bash
+    npm run dev
+    ```
+
+4.  The terminal will give you a local URL to open in your browser, usually `http://localhost:5173`. Open this URL.
+
+You should now be able to use the application by uploading your PDF files. Please check the output in **Terminal 1** for the detailed backend logs, as this will show exactly what the application is doing.
 
 ## Project info
 
