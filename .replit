@@ -1,0 +1,46 @@
+# .replit
+# Hoofdconfiguratiebestand voor Replit
+
+# Taal en interpreter
+language = "bash"
+
+# De commando's die worden uitgevoerd wanneer op "Run" wordt geklikt.
+# 1. Installeert de frontend dependencies.
+# 2. Installeert de backend dependencies.
+# 3. Start de frontend (Vite) en backend (Flask) servers tegelijk.
+run = [
+  "npm",
+  "install",
+  "&&",
+  "pip",
+  "install",
+  "-r",
+  "src/backend/requirements.txt",
+  "&&",
+  "npm",
+  "run",
+  "start"
+]
+
+# Configureer welke bestanden Replit moet tonen
+[unitTest]
+language = "python"
+
+# Verberg configuratiebestanden die de gebruiker niet vaak hoeft te bewerken
+hidden = ["replit.nix", ".config", "venv", "package-lock.json"]
+
+[packager]
+language = "python"
+[packager.features]
+packageSearch = true
+guessImports = true
+
+[languages.python]
+pattern = "**/*.py"
+[languages.javascript]
+pattern = "**/*.{js,jsx,ts,tsx}"
+
+[deployment]
+# Deze instellingen zijn voor Replit Deployments
+run = ["npm", "run", "start"]
+build = ["npm", "run", "build"] 

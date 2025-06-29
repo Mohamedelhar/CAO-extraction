@@ -298,5 +298,7 @@ def process_uploaded_pdfs():
 # De 'if __name__ == '__main__':' blok is niet nodig wanneer Gunicorn wordt gebruikt,
 # maar kan hier blijven staan voor eventuele lokale tests. Gunicorn start de 'app'
 # variabele direct.
-# if __name__ == '__main__':
-#    app.run(host='127.0.0.1', port=5001, debug=True) 
+if __name__ == '__main__':
+   # Replit (en andere hosts) geven de poort via een omgevingsvariabele.
+   port = int(os.environ.get('PORT', 5001))
+   app.run(host='0.0.0.0', port=port, debug=True) 

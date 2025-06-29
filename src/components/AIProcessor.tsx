@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2, RotateCcw, Download, Brain } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Gebruik de omgevingsvariabele voor de API URL, met localhost als fallback voor lokale ontwikkeling.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-
 interface AIProcessorProps {
   pdfFiles: File[];
   onProcessingComplete: () => void;
@@ -50,7 +47,7 @@ const AIProcessor = ({ pdfFiles, onProcessingComplete, onReset, addLog }: AIProc
     try {
       addLog('Communicatie', 'Wachten op antwoord van de server...', 'info');
       
-      const response = await fetch(`${API_BASE_URL}/api/process`, {
+      const response = await fetch(`/api/process`, {
         method: 'POST',
         body: formData,
       });
