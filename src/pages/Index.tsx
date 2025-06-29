@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, FileText, Cpu, Download } from 'lucide-react';
+import { CheckCircle2, FileText, Cpu, Download, FileSpreadsheet, Plus } from 'lucide-react';
 import PDFUpload from '@/components/PDFUpload';
 import AIProcessor from '@/components/AIProcessor';
 import LogViewer from '@/components/LogViewer';
@@ -32,8 +32,10 @@ const Index = () => {
   };
 
   const steps = [
-    { number: 1, title: 'Upload CAO PDFs', icon: FileText, completed: pdfFiles.length > 0 },
-    { number: 2, title: 'Download Resultaat', icon: Download, completed: isProcessingComplete }
+    { number: 1, title: 'Upload CAO PDF', icon: FileText },
+    { number: 2, title: 'AI Extractie', icon: Cpu },
+    { number: 3, title: 'Nieuwe Rij Toevoegen', icon: Plus },
+    { number: 4, title: 'Download Resultaat', icon: Download }
   ];
 
   const handlePDFUpload = (files: File[]) => {
@@ -56,15 +58,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 overflow-hidden relative">
       <img src={dotsIcon} alt="dots" style={{zIndex: '0', top: '-250px', opacity: '.6', width: '60%', height: '100%', left: '50%', position: 'absolute', transform: 'translateX(-50%)'}} />
-      <div className="container mx-auto px-4 py-36">
+      <div className="container mx-auto px-4 py-36 relative z-10">
         <div className="text-center mb-24">
           <h1 className="text-3xl font-semibold text-gray-900 mb-4">
             CAO Analyse & Excel Generator
           </h1>
           <p className="text-base text-gray-600 max-w-3xl mx-auto">
-            Upload een of meerdere CAO PDF-bestanden. De AI extraheert de loonstijgingen en genereert een samenvattend Excel-bestand.
+            Upload uw master Excel-bestand en CAO PDF om automatisch nieuwe rijen toe te voegen met geëxtraheerde gegevens.
           </p>
         </div>
 
@@ -73,11 +75,18 @@ const Index = () => {
           <div style={{paddingTop: '.8rem', paddingBottom: '.8rem'}} className="flex items-center space-x-4 bg-white rounded-lg shadow-sm p-6">
             {steps.map((step, index) => {
               const Icon = step.icon;
-              const isActive = currentStep === step.number;
-              const isCompleted = step.completed;
               
+              const isCompleted = 
+                (step.number === 1 && pdfFiles.length > 0) ||
+                (step.number > 1 && step.number < 4 && isProcessingComplete);
+
+              const isActive = 
+                (step.number === 1 && pdfFiles.length === 0) ||
+                (step.number === 2 && pdfFiles.length > 0 && !isProcessingComplete) ||
+                (step.number === 4 && isProcessingComplete);
+
               return (
-                <div key={step.number}>
+                <div key={step.number} className="flex items-center">
                   <div className="flex items-center space-x-2">
                     <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${
                       isCompleted 
@@ -101,7 +110,7 @@ const Index = () => {
                   </div>
                   {index < steps.length - 1 && (
                     <div className={`w-8 h-0.5 ${
-                      step.completed ? 'bg-green-500' : 'bg-gray-300'
+                      isCompleted ? 'bg-green-500' : 'bg-gray-300'
                     }`} />
                   )}
                 </div>
@@ -122,7 +131,7 @@ const Index = () => {
                   {pdfFiles.length > 0 && <Badge variant="secondary">Voltooid</Badge>}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-col">
                 <PDFUpload onUpload={handlePDFUpload} />
               </CardContent>
             </Card>

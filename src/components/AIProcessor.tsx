@@ -16,53 +16,93 @@ interface AIProcessorProps {
 const AIProcessor = ({ pdfFiles, onProcessingComplete, onReset, addLog }: AIProcessorProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  const startProcessing = async () => {
-    setIsProcessing(true);
-    addLog('Simulatie Gestart', 'De AI-verwerking wordt nu gesimuleerd.', 'info');
-    
-    // Hardcoded simulatie voor de presentatie
-    addLog('AI Analyse', 'Stap 1/3: PDF-tekst extraheren...', 'info');
-
-    // Wacht 45 seconden
-    await new Promise(resolve => setTimeout(resolve, 45000));
-    addLog('AI Analyse', 'Stap 2/3: Loonstijgingen classificeren met AI-model...', 'success');
-
-    // Wacht nog 60 seconden
-    await new Promise(resolve => setTimeout(resolve, 60000));
-    addLog('AI Analyse', 'Stap 3/3: Excel-bestand genereren...', 'success');
-    
-    // Wacht de laatste 15 seconden (totaal 2 minuten)
-    await new Promise(resolve => setTimeout(resolve, 15000));
-
-    // Maak een downloadlink voor het hardcoded bestand in de /public map
-    // In een live scenario zou dit van de *backend* komen.
+  const triggerDownload = (url?: string) => {
+    const finalUrl = url || downloadUrl;
+    if (!finalUrl) {
+      toast.error("Downloadfout", { description: "De downloadlink is niet beschikbaar." });
+      return;
+    }
     const link = document.createElement('a');
-    link.href = '/cao_samenvatting.xlsx'; // Pad blijft relatief aan de public map
-    link.setAttribute('download', 'cao_samenvatting_gegenereerd.xlsx');
+    link.href = finalUrl;
+    link.setAttribute('download', 'cao_samenvatting_resultaat.xlsx');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const startProcessing = async () => {
+    if (pdfFiles.length === 0) {
+        toast.info("Geen bestanden", { description: "Selecteer eerst PDF-bestanden om te analyseren." });
+        return;
+    }
     
-    toast.success("Verwerking voltooid!", {
-      description: "Het Excel-bestand wordt nu gedownload.",
+    setIsProcessing(true);
+    setIsComplete(false);
+    addLog('Verwerking Gestart', `Bezig met het versturen van ${pdfFiles.length} bestand(en) naar de server.`, 'info');
+
+    const formData = new FormData();
+    pdfFiles.forEach(file => {
+      formData.append('files', file);
     });
 
-    setIsProcessing(false);
-    setIsComplete(true);
-    onProcessingComplete();
+    try {
+      addLog('Communicatie', 'Wachten op antwoord van de server...', 'info');
+      
+      const response = await fetch(`${API_BASE_URL}/api/process`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Onbekende serverfout.' }));
+        const errorMessage = errorData.error || `HTTP status ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setDownloadUrl(url);
+
+      addLog('Succes', 'Excel-bestand succesvol ontvangen van de server.', 'success');
+      toast.success("Verwerking voltooid!", {
+        description: "Het Excel-bestand wordt nu gedownload.",
+      });
+
+      triggerDownload(url);
+      setIsComplete(true);
+      onProcessingComplete();
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      toast.error("Verwerkingsfout", {
+        description: `Er is een fout opgetreden: ${errorMessage}`,
+      });
+      addLog('Fout', `Er is een fout opgetreden: ${errorMessage}`, 'error');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (isComplete) {
     return (
       <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg bg-green-50">
         <Download className="w-10 h-10 text-green-600 mb-4" />
-        <h3 className="text-lg font-semibold text-green-800">Download Voltooid</h3>
-        <p className="text-sm text-green-700 mb-6">Het Excel-bestand is succesvol gedownload.</p>
-        <Button onClick={onReset} variant="outline">
-          <RotateCcw className="w-4 h-4 mr-2" />
-          Opnieuw Beginnen
-        </Button>
+        <h3 className="text-lg font-semibold text-green-800">Verwerking Voltooid</h3>
+        <p className="text-sm text-green-700 mb-6 text-center">
+          De download is gestart. Klik hieronder als het downloaden niet automatisch begon.
+        </p>
+        <div className="flex items-center space-x-4">
+          <Button onClick={() => triggerDownload()}>
+            <Download className="w-4 h-4 mr-2" />
+            Download Opnieuw
+          </Button>
+          <Button onClick={onReset} variant="outline">
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Opnieuw Beginnen
+          </Button>
+        </div>
       </div>
     );
   }
@@ -70,7 +110,7 @@ const AIProcessor = ({ pdfFiles, onProcessingComplete, onReset, addLog }: AIProc
   return (
     <div className="text-center">
       <p className="text-sm text-gray-600 mb-4">
-        {pdfFiles.length} PDF-bestand(en) zijn klaar voor analyse. Klik op 'Start Verwerking' om de AI aan het werk te zetten.
+        {pdfFiles.length} PDF-bestand(en) zijn klaar voor analyse. Klik op 'Start Analyse' om de AI aan het werk te zetten.
       </p>
       <Button 
         onClick={startProcessing} 

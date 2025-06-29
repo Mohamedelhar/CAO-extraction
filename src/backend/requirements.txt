@@ -6,3 +6,5 @@ pdf2image
 requests
 flask
 flask-cors 
+ipykernel 
+Pillow 

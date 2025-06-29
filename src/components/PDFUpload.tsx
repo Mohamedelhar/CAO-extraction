@@ -44,19 +44,15 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
             <p className="text-red-600 font-medium">Laat de CAO PDF bestanden hier vallen...</p>
           ) : (
             <div className="space-y-2">
-              <p className="text-gray-600">
-                Sleep uw CAO PDF bestanden hier naartoe of klik om te selecteren
+              <p className="font-semibold text-gray-700">
+                Sleep bestanden hier naartoe of klik in dit vlak om te selecteren
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-500">
                 Ondersteund formaat: .pdf (CAO documenten)
               </p>
             </div>
           )}
           
-          <Button variant="outline" className="flex items-center space-x-2">
-            <Upload className="w-4 h-4" />
-            <span>Selecteer CAO PDF</span>
-          </Button>
         </div>
       </div>
 
@@ -85,9 +81,9 @@ const PDFUpload: React.FC<PDFUploadProps> = ({ onUpload }) => {
             <p className="font-medium mb-1">CAO PDF Verwerkingstips:</p>
             <ul className="space-y-1 list-disc list-inside">
               <li>Upload de officiële CAO tekst in PDF formaat</li>
-              <li>AI herkent automatisch loonafspraken, vergoedingen en andere relevante gegevens</li>
+              <li>De AI is getraind om loonsverhogingen te herkennen</li>
               <li>Gestructureerde CAO documenten geven de beste resultaten</li>
-              <li>Het systeem zoekt naar specifieke termen zoals "loonsverhoging", "reiskosten", etc.</li>
+              <li>Het systeem zoekt naar specifieke termen zoals "loonsverhoging", "salaris", etc.</li>
             </ul>
           </div>
         </div>
